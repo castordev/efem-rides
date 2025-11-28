@@ -9,11 +9,17 @@
 <body>
     <h1>Planets Distance from Vigo</h1>
     <div>
-        {% for planet in planets %}
-            <form action="{% url 'distance' planet %}" method="get" style="display:inline-block; margin:5px;">
-                <button type="submit">{{ planet|capfirst }}</button>
+
+        {% for planet in planets %}         <!-- esto crea un bucle for en django-->
+                                            <!-- el bucle recorre la lista de planetas y genera un boton por cada planeta -->
+
+            <form action="{% url 'distance' planet %}" method="get" >
+
+                <button type="submit">{{ planet|capfirst }}</button>                
             </form>
+
         {% endfor %}
+
     </div>
 </body>
 </html>

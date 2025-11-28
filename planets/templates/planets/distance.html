@@ -1,14 +1,28 @@
-{% load static humanize %}
+
+{% load static humanize %}      <!-- cargamos dos modulos de django.-->
+                                <!-- % ... % indica que es una instruccion en el lenguaje de plantillas de django-->
+                                <!-- static permite usar archivos estaticos (CSS, imagenes, JS)-->
+                                <!-- humanize agrega filtros para mostrar numeros mas legibles (10000 pasa a ser 10,000)-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Distance to {{ planet_name|capfirst }}</title>
+
+    <title>Distance to {{ planet_name|capfirst }}</title>       <!-- "{{}}" estas llaves las utiliza django para insertar el valor de una variable dentro del html -->
+                                                                <!-- |capfirst es un filtro de django que pone la primera letra en mayuscula-->
+
     <link rel="stylesheet" href="{% static 'planets/style.css' %}">
 </head>
 <body>
-    <h1>Distance to {{ planet_name|capfirst }}</h1>
-    <p>{{ distance|intcomma }} km</p>
-    <a href="{% url 'home' %}">Back</a>
+
+
+    <h1>Distance to {{ planet_name|capfirst }}</h1> 
+
+    <p>{{ distance|intcomma }} km</p>                           <!-- intcoma convierte un numero grande en un formato mas legible (1000 pasa a ser 1,000)-->
+
+    <a href="{% url 'home' %}">Back</a>                         <!-- enlace clickable para volver->
+
+
 </body>
 </html>
