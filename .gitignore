@@ -1,5 +1,7 @@
 # Ignorar el archivo de efemérides de Skyfield
 de440.bsp
+de421.bsp
+*.bsp
 
 # Archivos de Python comunes
 *.pyc
