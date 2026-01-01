@@ -15,92 +15,60 @@ body {
   overflow-x: hidden;
 }
 
-.header-title{
+.header-title {
   text-align: center;
 }
 
+/* ===== Header fijo ===== */
 .orbits-header {
   position: fixed;
   top: 16px;
   right: 16px;
-  z-index: 900;
-}
-
-/* ===== Selector de fecha ===== */
-
-#date-form {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  background: rgba(15, 20, 40, 0.85);
+  z-index: 1200;
+  background: rgba(15, 20, 40, 0.95);
   padding: 12px 16px;
-  border-radius: 14px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.795);
+  border-radius: 0;
+  box-shadow:
+    4px 4px 0 #3656d4,
+    -4px -4px 0 #6b8fff;
 }
-
-#date-form input,
-#date-form button {
-  border-radius: 8px;
-}
-
-#date-form input {
-  background: #ffffff;    /* blanco para que el calendario sea visible */
-  color: #000000;         /* texto negro */
-  border: 1px solid #3a3f66;
-  padding: 6px 30px 6px 10px; /* espacio a la derecha para icono */
-  appearance: none;       /* quita estilo predeterminado en algunos navegadores */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  position: relative;
-}
-
-
-/* Botón */
-#date-form button {
-  background: linear-gradient(135deg, #4f7cff, #3656d4);
-  color: white;
-  border: none;
-  padding: 6px 14px;
-  cursor: pointer;
-}
-
 
 /* ===== Main ===== */
 main {
   flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-top: 0; /* No agregamos margen extra arriba */
+  position: relative;
+  min-height: 100vh;
 }
 
-/* ===== MARCO PIXELADO (solo alrededor del sistema solar) ===== */
+/* ===== MARCO PIXELADO SISTEMA SOLAR ===== */
 .solar-frame {
-  margin: 80px auto 60px auto;
-  padding: 24px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  padding: 16px;
   width: fit-content;
+  flex-shrink: 0;
+  background: #0e2b8b;
+  border-radius: 0;
 
-  background: #3a2a00;
-
-  /* Marco pixelado dorado */
   box-shadow:
-    0 0 0 4px #cfa43b,
-    4px 4px 0 4px #a37c1c,
-    -4px -4px 0 4px #ffd966,
-    8px 8px 0 0 #6b4e00,
-    -8px -8px 0 0 #ffe89a;
+    0 0 0 4px #2a2dc7,
+    4px 4px 0 #3717c4,
+    -4px -4px 0 #4934a8,
+    8px 8px 0 #0f82e0,
+    -8px -8px 0 #6b6dd8;
 
   image-rendering: pixelated;
 }
 
 /* ===== Caja interior sistema solar ===== */
 .solar-box {
-  width: 70vw;
-  max-width: 900px;
+  width: 55vw;
+  max-width: 720px;
   aspect-ratio: 1 / 1;
-
   background: rgba(0, 0, 0, 0.65);
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -111,6 +79,140 @@ main {
   width: 100%;
   height: auto;
   display: block;
+}
+
+/* ===== ÓRBITAS PIXELADAS ===== */
+.orbit {
+  fill: none;
+  stroke: #4a7fff;
+  stroke-width: 2;
+  stroke-dasharray: 2 2;
+  stroke-linecap: butt;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: crispEdges;
+}
+
+/* ===== PANEL DE CONTROL DE FECHA ===== */
+.date-control-panel {
+  position: absolute;
+  top: 50%;
+  left: calc(50% + min(27.5vw, 360px) + 40px);
+  transform: translateY(-50%);
+  z-index: 1150;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+
+  padding: 24px;
+  min-width: 250px;
+  height: fit-content;
+  flex-shrink: 0;
+
+  background: rgba(15, 20, 40, 0.95);
+  border-radius: 0;
+  border: 4px solid #4a7fff;
+
+  box-shadow:
+    4px 4px 0 #3656d4,
+    -4px -4px 0 #6b8fff;
+}
+
+/* ===== Formulario ===== */
+#date-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 12px;
+  color: #ff00ff;
+  text-shadow: 0 0 8px #ff00ff;
+}
+
+/* ===== Inputs pixelados ===== */
+.form-group input {
+  background: #000814;
+  color: #00ff00;
+  border: 4px solid #ff00ff;
+  border-radius: 0;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: monospace;
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 0 0 2px #000814,
+    4px 4px 0 #ff00ff;
+}
+
+/* Contenedor del input de fecha: posicionar el botón de calendario dentro */
+.date-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.date-input {
+  width: 100%;
+  /* dejar espacio a la derecha para el icono */
+  padding-right: 56px;
+}
+
+/* Botón calendario visible dentro del rectángulo */
+.calendar-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 6px 8px;
+  font-size: 14px;
+  line-height: 1;
+  background: #1b1f3a;
+  color: #fff;
+  border: 4px solid black;
+  box-shadow: 4px 4px 0 #3656d4;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.calendar-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74,127,255,0.25);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #00ffff;
+}
+
+/* ===== Botones ===== */
+.btn {
+  padding: 10px 16px;
+  border-radius: 0;
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  border: 4px solid black;
+}
+
+.btn-today {
+  background: #ff9900;
+  box-shadow: 4px 4px 0 #ff6600;
+}
+
+.btn-submit {
+  background: #4f7cff;
+  box-shadow: 4px 4px 0 #3656d4;
 }
 
 /* ===== Sidebar ===== */
@@ -143,12 +245,22 @@ main {
   z-index: 1100;
 }
 
-/* ===== ÓRBITAS ===== */
-.orbit {
-  fill: none;
-  stroke: rgba(200, 220, 255, 0.8);
-  stroke-width: 2;
-  stroke-dasharray: 10 6;
-  filter: drop-shadow(0 0 6px rgba(120, 170, 255, 0.6));
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .solar-frame {
+    position: static;
+    transform: none;
+    margin: 0 auto;
+  }
+
+  .date-control-panel {
+    position: static;
+    transform: none;
+    margin: 20px auto 0;
+  }
+
+  .solar-box {
+    width: 90vw;
+  }
 }
 

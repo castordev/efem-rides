@@ -29,16 +29,6 @@
   <h1>SOLAR SYSTEM</h1>
 </div>
 
-
-<!-- Selector de fecha flotante -->
-<div class="orbits-header">
-  <form method="get" id="date-form">
-    <label for="date">Date:</label>
-    <input type="date" id="date" name="date" value="{{ selected_date }}">
-    <button type="submit">Ver</button>
-  </form>
-</div>
-
 <!-- Contenedor principal con marco pixelado -->
 <main>
   <div class="solar-frame">
@@ -47,10 +37,15 @@
         <!-- Sol -->
         <circle cx="550" cy="550" r="30" fill="#ffcc00" />
 
-        <!-- Órbitas -->
-        {% for name, pos in positions.items %}
-          <circle cx="550" cy="550" r="{{ pos.radius }}" stroke="rgba(255,255,255,0.3)" fill="none" stroke-dasharray="4"/>
-        {% endfor %}
+        <!-- Órbitas de los planetas (estáticas) -->
+        <circle class="orbit" cx="550" cy="550" r="80" fill="none"></circle>
+        <circle class="orbit" cx="550" cy="550" r="120" fill="none"></circle>
+        <circle class="orbit" cx="550" cy="550" r="160" fill="none"></circle>
+        <circle class="orbit" cx="550" cy="550" r="200" fill="none"></circle>
+        <circle class="orbit" cx="550" cy="550" r="260" fill="none"></circle>
+        <circle class="orbit" cx="550" cy="550" r="320" fill="none"></circle>
+        <circle class="orbit" cx="550" cy="550" r="380" fill="none"></circle>
+        <circle class="orbit" cx="550" cy="550" r="440" fill="none"></circle>
 
         <!-- Planetas -->
         <circle id="mercury" r="12" fill="#aaa"></circle>
@@ -63,6 +58,29 @@
         <circle id="neptune" r="12" fill="#4369b8"></circle>
       </svg>
     </div>
+  </div>
+
+  <!-- Selector de fecha a la derecha -->
+  <div class="date-control-panel">
+    <form method="get" id="date-form">
+      <div class="form-group">
+        <label for="date">Fecha:</label>
+        <div class="date-input-wrap">
+          <input type="date" id="date" name="date" value="{{ selected_date }}" readonly class="date-input">
+          <button type="button" id="calendar-btn" class="btn calendar-btn" aria-label="Abrir calendario">📅</button>
+          <!-- Botón Ver a la derecha del calendario -->
+          <button type="submit" class="btn btn-submit date-submit">Ver</button>
+        </div>
+      </div>
+
+
+      <!-- Fila de navegación de fechas: anterior / hoy / siguiente -->
+      <div class="date-nav-row">
+        <button type="button" id="prev-day-btn" class="btn btn-nav" aria-label="Día anterior">◀</button>
+        <button type="button" id="today-btn" class="btn btn-today" aria-label="Hoy">Hoy</button>
+        <button type="button" id="next-day-btn" class="btn btn-nav" aria-label="Día siguiente">▶</button>
+      </div>
+    </form>
   </div>
 </main>
 
