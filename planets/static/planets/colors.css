@@ -1,0 +1,32 @@
+:root{
+  --color-1: #e8f1a6;
+  --color-2: #cad670;
+  --color-3: #a3c255;
+  --color-4: #6fa341;
+  --color-5: #498f45;
+  --color-6: #387450;
+  --color-7: #2d5c56;
+  --color-8: #1f3741;
+  --color-9: #1e2029;
+  --color-10: #16161c;
+
+  /* semantic aliases (optional) */
+  --bg: var(--color-10);
+  --panel: var(--color-9);
+  --card: var(--color-8);
+  --accent: var(--color-2);
+  --accent-2: var(--color-3);
+  --text: #eaf3d6; /* light text that contrasts with dark backgrounds */
+  --muted: #9aa4b2;
+  --orbit: var(--color-7);
+  --asteroid: var(--color-1);
+}
+
+/* Minimal examples of usage - adapt or remove as you prefer */
+body { background: var(--bg); color: var(--text); }
+.win-content, .planet-modal, .date-control-panel { background: linear-gradient(180deg,var(--panel),var(--card)); }
+button, .btn { background: var(--accent); color: var(--panel); border: none; }
+a { color: var(--accent-2); }
+.orbit { stroke: var(--orbit); stroke-opacity: 0.9; }
+#asteroid-belt circle { fill: var(--asteroid); }
+.planet-modal img { border-radius: 8px; }

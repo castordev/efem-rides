@@ -15,24 +15,79 @@ body {
   overflow-x: hidden;
 }
 
-.header-title {
-  text-align: center;
+/* ===== Windows-style windows (neobrutalist) ===== */
+.win-window {
+  --nb-bg: #ffffff;
+  --nb-ink: #000000;
+  --nb-accent: #4a7fff;
+  --nb-shadow: #000000;
 }
 
-/* ===== Header fijo ===== */
-.orbits-header {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 1200;
-  background: rgba(15, 20, 40, 0.95);
-  padding: 12px 16px;
-  border-radius: 0;
-  box-shadow:
-    4px 4px 0 #3656d4,
-    -4px -4px 0 #6b8fff;
+.win-window {
+  background: var(--nb-bg);
+  padding: 0;
+  border: 4px solid var(--nb-ink);
+  box-shadow: 10px 10px 0 var(--nb-shadow);
 }
 
+.win-window,
+.win-window * {
+  font-family: Tahoma, "MS Sans Serif", Arial, sans-serif;
+  color: var(--nb-ink);
+}
+
+.win-inner {
+  background: var(--nb-bg);
+  border: 0;
+}
+
+.win-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--nb-accent);
+  border-bottom: 4px solid var(--nb-ink);
+}
+
+.win-title {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 0;
+}
+
+.win-controls {
+  display: flex;
+  gap: 2px;
+}
+
+.win-btn {
+  width: 24px;
+  height: 22px;
+  padding: 0;
+  background: #fff;
+  border: 3px solid var(--nb-ink);
+  font-size: 12px;
+  line-height: 16px;
+  cursor: default;
+  box-shadow: 3px 3px 0 var(--nb-shadow);
+}
+
+.win-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--nb-shadow);
+}
+
+.win-content {
+  padding: 12px;
+  background: var(--nb-bg);
+}
 /* ===== Main ===== */
 main {
   flex: 1;
@@ -40,35 +95,27 @@ main {
   min-height: 100vh;
 }
 
-/* ===== MARCO PIXELADO SISTEMA SOLAR ===== */
+/* ===== SOLAR SYSTEM FRAME ===== */
 .solar-frame {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-
-  padding: 16px;
   width: fit-content;
   flex-shrink: 0;
-  background: #0e2b8b;
-  border-radius: 0;
-
-  box-shadow:
-    0 0 0 4px #2a2dc7,
-    4px 4px 0 #3717c4,
-    -4px -4px 0 #4934a8,
-    8px 8px 0 #0f82e0,
-    -8px -8px 0 #6b6dd8;
-
   image-rendering: pixelated;
 }
 
-/* ===== Caja interior sistema solar ===== */
+.solar-frame .win-content {
+  padding: 15px;
+}
+
+/* ===== Solar system inner box ===== */
 .solar-box {
-  width: 55vw;
-  max-width: 760px;
+  width: 60vw;
+  max-width: 860px;
   aspect-ratio: 1 / 1;
-  background: rgba(0, 0, 0, 0.65);
+  background: transparent;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,10 +128,20 @@ main {
   display: block;
 }
 
-/* ===== ÓRBITAS PIXELADAS ===== */
+/* clickable planets */
+.solar-system image[id]:not(#background):not(#sun) {
+  cursor: pointer;
+}
+
+/* background opacity */
+.solar-system #background {
+  opacity: 1;
+}
+
+/* ===== ORBITS ===== */
 .orbit {
   fill: none;
-  stroke: #4a7fff;
+  stroke: #2d5c56;
   stroke-width: 2;
   stroke-dasharray: 2 2;
   stroke-linecap: butt;
@@ -92,11 +149,41 @@ main {
   shape-rendering: crispEdges;
 }
 
-/* ===== PANEL DE CONTROL DE FECHA ===== */
+/* ===== Planet info modal ===== */
+.planet-modal-overlay[hidden] {
+  display: none;
+}
+
+.planet-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: block;
+  background: transparent;
+  z-index: 2500;
+}
+
+.planet-modal {
+  position: fixed;
+  left: 12px;
+  top: 12px;
+  width: min(520px, calc(100vw - 40px));
+}
+
+.planet-modal-body {
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: pre-wrap;
+}
+
+.planet-modal-close {
+  cursor: pointer;
+}
+
+/* ===== DATE CONTROL PANEL ===== */
 .date-control-panel {
   position: absolute;
-  top: 50%;
-  left: calc(50% + min(27.5vw, 360px) + 40px);
+  top: 30%;
+  left: calc(50% + min(30vw, 430px) + 60px);
   transform: translateY(-50%);
   z-index: 1150;
 
@@ -105,21 +192,16 @@ main {
   align-items: center;
   gap: 15px;
 
-  padding: 24px;
   min-width: 250px;
   height: fit-content;
   flex-shrink: 0;
-
-  background: rgba(15, 20, 40, 0.95);
-  border-radius: 0;
-  border: 4px solid #4a7fff;
-
-  box-shadow:
-    4px 4px 0 #3656d4,
-    -4px -4px 0 #6b8fff;
 }
 
-/* ===== Formulario ===== */
+.date-control-panel .win-content {
+  padding: 12px;
+}
+
+/* ===== Form ===== */
 #date-form {
   display: flex;
   flex-direction: column;
@@ -133,29 +215,20 @@ main {
   gap: 8px;
 }
 
-.form-group label {
-  font-size: 12px;
-  color: #ff00ff;
-  text-shadow: 0 0 8px #ff00ff;
-}
-
-/* ===== Inputs pixelados ===== */
+/* ===== Inputs ===== */
 .form-group input {
-  background: #000814;
-  color: #00ff00;
-  border: 4px solid #ff00ff;
+  background: #fff;
+  color: #000;
+  border: 3px solid #000;
   border-radius: 0;
-  padding: 12px 16px;
-  font-size: 14px;
-  font-family: monospace;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-family: inherit;
   cursor: text;
-
-  box-shadow:
-    inset 0 0 0 2px #000814,
-    4px 4px 0 #ff00ff;
+  box-shadow: 4px 4px 0 #000;
 }
 
-/* Contenedor del input de fecha: posicionar el botón de calendario dentro */
+/* Date input wrapper: place the calendar button inside */
 .date-input-wrap {
   position: relative;
   width: 100%;
@@ -165,47 +238,47 @@ main {
   width: 100%;
   /* dejar espacio a la derecha para el icono */
   padding-right: 56px;
+  position: relative;
+  z-index: 1;
 }
 
-/* Botón calendario visible dentro del rectángulo */
+/* Calendar button inside the input */
 .calendar-btn {
   position: absolute;
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  padding: 6px 8px;
-  font-size: 14px;
+  padding: 0;
+  width: 24px;
+  height: 22px;
+  font-size: 12px;
   line-height: 1;
-  background: transparent;
-  color: #00ff00;
-  border: none;
-  box-shadow: none;
+  background: #fff;
+  color: #000;
+  border: 3px solid #000;
+  box-shadow: 3px 3px 0 #000;
   border-radius: 0;
   cursor: pointer;
   z-index: 2;
 }
 
-.date-input {
-  position: relative;
-  z-index: 1;
+.calendar-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #000;
 }
 
-.date-submit {
-  margin-top: 8px;
-}
-
-/* ===== Datepicker personalizado (solo días del mes) ===== */
+/* ===== Custom datepicker (month days only) ===== */
 .custom-datepicker {
   position: absolute;
   right: 0;
   top: calc(100% + 8px);
-  background: rgba(6,10,20,0.95);
-  color: #00ff00;
-  border: 4px solid #4a7fff;
+  background: #fff;
+  color: #000;
+  border: 4px solid #000;
   padding: 8px;
   z-index: 60;
   width: 240px;
-  box-shadow: 4px 4px 0 #3656d4;
+  box-shadow: 10px 10px 0 #000;
   display: none;
 }
 
@@ -222,16 +295,22 @@ main {
 }
 
 .dp-nav-btn {
-  background: transparent;
-  color: #fff;
-  border: none;
+  background: #fff;
+  color: #000;
+  border: 3px solid #000;
   font-size: 14px;
   cursor: pointer;
+  box-shadow: 3px 3px 0 #000;
+}
+
+.dp-nav-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #000;
 }
 
 .dp-title {
-  font-size: 13px;
-  color: #ff99ff;
+  font-size: 12px;
+  color: #000;
 }
 
 .dp-weekdays {
@@ -239,7 +318,7 @@ main {
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
   font-size: 11px;
-  color: #b0b0b0;
+  color: #000;
   margin-bottom: 4px;
 }
 
@@ -255,81 +334,53 @@ main {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: none;
-  color: #00ff00;
+  background: #fff;
+  border: 3px solid #000;
+  color: #000;
   cursor: pointer;
   font-size: 12px;
 }
 
+.dp-day:active {
+  transform: translate(2px, 2px);
+}
+
 .dp-day.disabled {
-  color: #2a2a2a;
+  color: #7a7a7a;
   cursor: default;
 }
 
 .dp-day:hover:not(.disabled) {
-  background: rgba(74,127,255,0.15);
+  background: #4a7fff;
+  color: #000;
 }
 
 .calendar-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(74,127,255,0.25);
+  box-shadow: none;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #00ffff;
+  border-color: #000;
 }
 
 /* ===== Botones ===== */
 .btn {
-  padding: 10px 16px;
+  padding: 6px 10px;
   border-radius: 0;
-  font-family: 'Press Start 2P', sans-serif;
-  font-size: 10px;
+  font-family: inherit;
+  font-size: 11px;
   cursor: pointer;
-  text-transform: uppercase;
-  border: 4px solid black;
+  text-transform: none;
+  background: #fff;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 #000;
 }
 
-.btn-today {
-  background: #ff9900;
-  box-shadow: 4px 4px 0 #ff6600;
-}
-
-.btn-submit {
-  background: #4f7cff;
-  box-shadow: 4px 4px 0 #3656d4;
-}
-
-/* ===== Sidebar ===== */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: -250px;
-  width: 250px;
-  height: 100%;
-  background: rgba(20,20,30,0.95);
-  padding: 20px;
-  transition: left 0.3s ease;
-  z-index: 1000;
-}
-
-.sidebar.open {
-  left: 0;
-}
-
-/* ===== Botón menú ===== */
-.open-btn {
-  position: fixed;
-  top: 16px;
-  left: 5px;
-  font-size: 24px;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  z-index: 1100;
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #000;
 }
 
 /* ===== Responsive ===== */

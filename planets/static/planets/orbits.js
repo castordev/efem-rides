@@ -1,17 +1,286 @@
-// Obtener posiciones desde Django
+// Obtener posiciones desde Django y covertirlos en objeto usable para javascript
+// .parse convierte el string en objeto
+// .textContent devuelve el texto dentro del html
 const positions = JSON.parse(document.getElementById('positions-data').textContent);
+
+/* esto da como resultado
+
+positions = {
+  earth: { radius: 300, angle: 1.57 },
+  mars: { radius: 350, angle: 0.9 }
+}
+
+*/
+
+// declaramos el centro del lienzo SVG
 const center = 1600 / 2;
 
+//llamamos a la API para pedir informacion y si da error devolvemos null para que no la lie
+//si try funciona devuelve el texto convertido a objeto y si falla va a catch y devuelve null
+function safeParseJson(text) {
+    try {
+        return JSON.parse(text);
+    } catch {
+        return null;
+    }
+}
+
+// si el  id es por ejemplo mars, devuelve Mars y si es null devuelve Planet
+// "sun" → "Sun", "" → "Planet"
+// id.slice(1) devuelve el String desde el segundo caracter (el 0 cuenta jeje)
+function titleFromId(id) {
+    if (!id) return 'Planet';
+    return id.charAt(0).toUpperCase() + id.slice(1);
+}
+
+
+// bloque para que la ejecucion de todo el codigo se retrase hasta que el html este cargado
+// estructura de window.addEventListener (type,listener,options(options es opcional))
+// Cuando el DOMContentLoaded este listo se ejecuta el listener, en este caso todo el script
+// () => {} funcion flecha
 window.addEventListener('DOMContentLoaded', () => {
-    // Use SVG orbit radii when available so planets align with drawn orbits
-    const orbitEls = document.querySelectorAll('.orbit');
+
+    //constante para orden de los planetas
     const planetOrder = ['mercury','venus','earth','mars','jupiter','saturn','uranus','neptune'];
+
+    // const para botones clicables, empezando en el sol y seguido por la const planetOrder
+    // ... desempaqueta los elementos de un array dentro de otro array
+    const clickableBodies = ['sun', ...planetOrder];
+
+
+    // orbitEls contiene los elementos de .orbit
+    const orbitEls = document.querySelectorAll('.orbit');
+
+    // cont radiusMap = {} crea un objeto vacio para guardar radios por planeta
     const radiusMap = {};
+
+    // p(planeta), i (indice)
+    // bucle, la constante orbitEl cambia cada vuelta por el planeta del array en orden (orbitsEls[i])
     planetOrder.forEach((p, i) => {
         const orbitEl = orbitEls[i];
+
+        //Aseguramos que los planetas coincidan con la orbita
         if (orbitEl && orbitEl.getAttribute('r')) radiusMap[p] = parseFloat(orbitEl.getAttribute('r'));
+
+        //si no hay planeta la orbita sale igual porque si, no se, chatgpt me dijo que pusiera esto aqui 
         else if (positions[p] && positions[p].radius) radiusMap[p] = positions[p].radius;
     });
+
+
+    // informacion de los planetas en el pop up
+    const modalOverlay = document.getElementById('planet-modal-overlay');
+    const modal = document.getElementById('planet-modal');
+    const modalTitle = document.getElementById('planet-modal-title');
+    const modalBody = document.getElementById('planet-modal-body');
+    const modalClose = document.getElementById('planet-modal-close');
+
+    const planetInfoEl = document.getElementById('planet-info-data');
+    // Optional user notes per planet (editable in HTML)
+    const planetInfo = planetInfoEl ? (safeParseJson(planetInfoEl.textContent) || {}) : {};
+
+    const dateInput = document.getElementById('date');
+
+    function formatNumber(n, digits = 2) {
+        if (n === null || n === undefined) return '—';
+        const x = Number(n);
+        if (Number.isNaN(x)) return '—';
+        return x.toFixed(digits);
+    }
+
+    function formatMaybeInt(n) {
+        if (n === null || n === undefined) return '—';
+        const x = Number(n);
+        if (Number.isNaN(x)) return '—';
+        return String(Math.round(x));
+    }
+
+    function buildPlanetText(apiData, notes) {
+        const lines = [];
+        const planetKey = (apiData.planet || '').toLowerCase();
+        lines.push(`Day length: ${formatNumber(apiData.day_length_hours, 2)} hours`);
+        // Omitir la longitud del año en días terrestres para la Tierra (redundante)
+        // y para el Sol (no aplica / no queremos mostrarlo).
+        if (planetKey !== 'earth' && planetKey !== 'sun') {
+            lines.push(`Year length: ${formatNumber(apiData.year_length_earth_days, 2)} Earth days`);
+        }
+        // Para el Sol, ocultar también el "year length" en días locales.
+        if (planetKey !== 'sun' && apiData.year_length_local_days !== null && apiData.year_length_local_days !== undefined) {
+            lines.push(`Year length: ${formatNumber(apiData.year_length_local_days, 2)} local days`);
+        }
+        lines.push(`Gravity: ${formatNumber(apiData.gravity_ms2, 2)} m/s²`);
+        lines.push(`Mean temperature: ${formatMaybeInt(apiData.mean_temperature_c)} °C`);
+        lines.push(`Atmosphere: ${apiData.atmosphere || '—'}`);
+        if (apiData.composition) {
+            lines.push(`Composition: ${apiData.composition}`);
+        }
+        // Para el Sol, no mostrar número de lunas.
+        if (planetKey !== 'sun') {
+            lines.push(`Moons: ${apiData.moons ?? '—'}`);
+        }
+        lines.push('');
+
+        // Para el Sol, ocultar: orbit progress y day-of-year.
+        if (planetKey !== 'sun') {
+            lines.push(`Orbit progress on ${apiData.date}: ${(Number(apiData.year_progress) * 100).toFixed(1)}%`);
+            // Omitir "Day of year" en escala de días terrestres para la Tierra (redundante)
+            if (planetKey !== 'earth') {
+                lines.push(`Day of year (Earth-day scale): ${apiData.day_of_year_earth_days} / ${formatNumber(apiData.year_length_earth_days, 0)}`);
+            }
+            if (apiData.day_of_year_local_days !== null && apiData.day_of_year_local_days !== undefined) {
+                lines.push(`Day of year (local-day scale): ${apiData.day_of_year_local_days} / ${formatNumber(apiData.year_length_local_days, 0)}`);
+            }
+        }
+        const notesText = String(notes ?? '').trim();
+        const isPlaceholderNotes = /^write your notes\b/i.test(notesText);
+        if (notesText && !isPlaceholderNotes) {
+            lines.push('');
+            lines.push('Notes:');
+            lines.push(notesText);
+        }
+        return lines.join('\n');
+    }
+
+    // Escape text for safe HTML insertion
+    function escapeHtml(s) {
+        return String(s || '').replace(/[&<>"']/g, (c) => {
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+        });
+    }
+
+    // Get a usable image src for a planet: prefer the existing SVG image element's
+    // href/xlink:href attribute; fallback to the static path.
+    function getPlanetImageSrc(planetId) {
+        try {
+            const el = document.getElementById(planetId);
+            if (el) {
+                return el.getAttribute('href') || el.getAttribute('xlink:href') || el.getAttribute('src') || (`/static/planets/gifs/${planetId}.gif`);
+            }
+        } catch (e) {
+            // ignore
+        }
+        return `/static/planets/gifs/${planetId}.gif`;
+    }
+
+    function positionModalNearPoint(point) {
+        if (!modal) return;
+        const margin = 12;
+        const offset = 14;
+
+        // Ensure we can measure it
+        modal.style.visibility = 'hidden';
+        modal.style.left = `${Math.round(margin)}px`;
+        modal.style.top = `${Math.round(margin)}px`;
+
+        requestAnimationFrame(() => {
+            const rect = modal.getBoundingClientRect();
+            const w = rect.width || 320;
+            const h = rect.height || 180;
+
+            let left = point.x + offset;
+            let top = point.y + offset;
+
+            // If it would overflow to the right, try placing to the left of the point
+            if (left + w > window.innerWidth - margin) {
+                left = point.x - offset - w;
+            }
+            // If it would overflow to the bottom, clamp upward
+            if (top + h > window.innerHeight - margin) {
+                top = window.innerHeight - margin - h;
+            }
+
+            left = Math.min(Math.max(margin, left), window.innerWidth - margin - w);
+            top = Math.min(Math.max(margin, top), window.innerHeight - margin - h);
+
+            modal.style.left = `${Math.round(left)}px`;
+            modal.style.top = `${Math.round(top)}px`;
+            modal.style.visibility = 'visible';
+        });
+    }
+
+    async function openPlanetModal(planetId, point) {
+        if (!modalOverlay || !modalTitle || !modalBody) return;
+        const info = planetInfo[planetId] || {};
+        const title = info.title || titleFromId(planetId);
+        modalTitle.textContent = title;
+        modalBody.textContent = 'Loading...';
+        modalOverlay.hidden = false;
+        if (point) positionModalNearPoint(point);
+        if (modalClose) modalClose.focus();
+        document.addEventListener('keydown', escCloseHandler);
+
+        const selected = dateInput && dateInput.value ? dateInput.value : '';
+        const url = `/api/planet-info/?planet=${encodeURIComponent(planetId)}&date=${encodeURIComponent(selected)}`;
+        try {
+            const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (data && data.error) throw new Error(data.error);
+            const notes = info.notes || '';
+
+            let text = buildPlanetText(data, notes);
+
+            // Prepare planet image info for later rendering in the modal
+            const imgSrc = getPlanetImageSrc(planetId);
+            // Use Jupiter's SVG width as base but DOUBLE it for the popup image
+            // so the modal image is larger while SVG orbit images remain unchanged.
+            let imgWidth = 90;
+            try {
+                const jupEl = document.getElementById('jupiter');
+                if (jupEl) {
+                    const base = parseFloat(jupEl.getAttribute('width')) || imgWidth;
+                    imgWidth = base * 2;
+                } else {
+                    const srcEl = document.getElementById(planetId);
+                    const base = srcEl ? (parseFloat(srcEl.getAttribute('width')) || imgWidth) : imgWidth;
+                    imgWidth = base * 2;
+                }
+            } catch (e) {
+                // ignore
+            }
+            const imgHtml = `<img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(title)}" style="width:${Math.round(imgWidth)}px;height:auto;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);flex:0 0 auto">`;
+
+            // Extra info for the Sun: show ONLY the next predicted storm time.
+            if (planetId === 'sun') {
+                try {
+                    const swUrl = `/api/space-weather/?date=${encodeURIComponent(selected)}`;
+                    const swRes = await fetch(swUrl, { headers: { 'Accept': 'application/json' } });
+                    if (swRes.ok) {
+                        const sw = await swRes.json();
+                        const nextStorm = sw.next_predicted_geomagnetic_storm_utc || '—';
+                        text += `\n\nNext predicted solar storm (UTC): ${nextStorm}`;
+                    }
+                } catch {
+                    // ignore, we keep the base Sun info
+                }
+            }
+
+            // Render modal with image + text (apply any extra text appended above)
+            modalBody.innerHTML = `<div style="display:flex;align-items:flex-start;gap:12px">${imgHtml}<pre style="margin:0;white-space:pre-wrap;font-family:inherit">${escapeHtml(text)}</pre></div>`;
+        } catch (err) {
+            modalBody.textContent = `Could not load data. ${String(err && err.message ? err.message : err)}`;
+        }
+    }
+
+    function closePlanetModal() {
+        if (!modalOverlay) return;
+        modalOverlay.hidden = true;
+        document.removeEventListener('keydown', escCloseHandler);
+    }
+
+    function escCloseHandler(e) {
+        if (e.key === 'Escape') closePlanetModal();
+    }
+
+    if (modalClose) modalClose.addEventListener('click', closePlanetModal);
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', (e) => {
+            // Close when clicking outside the window
+            if (e.target === modalOverlay) closePlanetModal();
+        });
+    }
+    if (modal) {
+        modal.addEventListener('click', (e) => e.stopPropagation());
+    }
 
     for (let planet in positions) {
         const el = document.getElementById(planet);
@@ -35,6 +304,29 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Register clicks on planets (only the expected ones)
+    clickableBodies.forEach((planetId) => {
+        const el = document.getElementById(planetId);
+        if (!el) return;
+        // accesibilidad básica
+        el.setAttribute('tabindex', '0');
+        el.setAttribute('role', 'button');
+        el.setAttribute('aria-label', `View information about ${titleFromId(planetId)}`);
+
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openPlanetModal(planetId, { x: e.clientX, y: e.clientY });
+        });
+        el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const r = el.getBoundingClientRect();
+                openPlanetModal(planetId, { x: r.right, y: r.top });
+            }
+        });
+    });
+
     // Generar cinturón de asteroides entre Marte y Júpiter
     function generateAsteroidBelt(count = 250, gap = 40) {
         const beltGroup = document.getElementById('asteroid-belt');
@@ -49,28 +341,49 @@ window.addEventListener('DOMContentLoaded', () => {
             marsR = parseFloat(orbitEls[3].getAttribute('r'));
             jupiterR = parseFloat(orbitEls[4].getAttribute('r'));
         }
-        // fallback to positions if SVG not present
-        if (!marsR) marsR = positions.mars && positions.mars.radius ? positions.mars.radius : 288;
-        if (!jupiterR) jupiterR = positions.jupiter && positions.jupiter.radius ? positions.jupiter.radius : 360;
+        // fallback to fixed radii if SVG not present. Avoid using `positions` here
+        // because `positions` changes with the selected date and would make the
+        // belt move between reloads. Prefer SVG orbit radii; otherwise use
+        // stable defaults.
+        if (!marsR || !jupiterR) {
+            const defaultMarsR = 288;
+            const defaultJupiterR = 360;
+            marsR = marsR || defaultMarsR;
+            jupiterR = jupiterR || defaultJupiterR;
+        }
 
-        let minR = Math.min(marsR, jupiterR) + gap;
-        let maxR = Math.max(marsR, jupiterR) - gap;
+        // Increase separation between belt and planet orbits.
+        // `extraPadding` widens the gap beyond the caller-provided `gap`.
+        const extraPadding = 30; // px of additional separation
+        const effectiveGap = gap + extraPadding;
+        let minR = Math.min(marsR, jupiterR) + effectiveGap;
+        let maxR = Math.max(marsR, jupiterR) - effectiveGap;
         if (minR >= maxR) {
-            const fallbackGap = Math.max(10, Math.floor(gap / 2));
+            const fallbackGap = Math.max(10, Math.floor(effectiveGap / 2));
             minR = Math.min(marsR, jupiterR) + fallbackGap;
             maxR = Math.max(marsR, jupiterR) - fallbackGap;
         }
 
+        // Deterministic placement using index-based sequence (golden ratio spacing)
+        // This avoids any use of Math.random() or time-varying data so positions
+        // remain identical between reloads and date changes.
         const SVG_NS = 'http://www.w3.org/2000/svg';
+        const phi = 0.618033988749895; // 1/phi
+        function fract(x) { return x - Math.floor(x); }
         for (let i = 0; i < count; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const r = minR + Math.random() * Math.max(0, (maxR - minR));
+            // angle spaced by irrational multiplier to avoid clustering
+            const angle = fract(i * phi) * Math.PI * 2;
+            // radius distributed across band; add a small deterministic jitter
+            const bandPos = i / count;
+            const baseR = minR + bandPos * Math.max(0, (maxR - minR));
+            const jitter = (fract(Math.sin(i * 12.9898) * 43758.5453) - 0.5) * 8; // +/-4px
+            const r = Math.max(minR, Math.min(maxR, baseR + jitter));
             const cx = center + r * Math.cos(angle);
             const cy = center - r * Math.sin(angle);
             const dot = document.createElementNS(SVG_NS, 'circle');
             dot.setAttribute('cx', cx);
             dot.setAttribute('cy', cy);
-            const rr = (Math.random() * 1.4) + 0.6;
+            const rr = 0.8 + fract(Math.cos(i * 7.123) * 10000) * 1.8; // size 0.8-2.6
             dot.setAttribute('r', rr);
             dot.setAttribute('fill', '#9e9e9e');
             dot.setAttribute('opacity', '0.95');
@@ -80,9 +393,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     generateAsteroidBelt(250, 40);
 
-    // Botón para establecer fecha de hoy
+    // Button to set today's date
     const todayBtn = document.getElementById('today-btn');
-    const dateInput = document.getElementById('date');
     const dateForm = document.getElementById('date-form');
     const calendarBtn = document.getElementById('calendar-btn');
     const customPicker = document.getElementById('custom-datepicker');
@@ -108,7 +420,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const first = new Date(year, month, 1);
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+        const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
         let html = `
           <div class="dp-header">
@@ -116,7 +428,7 @@ window.addEventListener('DOMContentLoaded', () => {
             <div class="dp-title">${monthNames[month]} ${year}</div>
             <button type="button" class="dp-nav-btn" data-action="next">▶</button>
           </div>
-          <div class="dp-weekdays"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
+          <div class="dp-weekdays"><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div></div>
           <div class="dp-grid">
         `;
 
@@ -207,7 +519,7 @@ window.addEventListener('DOMContentLoaded', () => {
             dateForm.addEventListener('submit', (e) => {
                 if (!normalizeAndValidateDate()) {
                     e.preventDefault();
-                    alert('Fecha inválida. Usa el formato YYYY-MM-DD o una fecha reconocible.');
+                    alert('Invalid date. Use YYYY-MM-DD or a recognizable date.');
                 }
             });
         }
