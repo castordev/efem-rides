@@ -3,42 +3,79 @@
   box-sizing: border-box;
 }
 
+/* ===== Dither Pattern (usando solo colores de colors.css) ===== */
+/* Patrón de dither 2x2 pixelado */
+.dither-pattern {
+  background-image: 
+    linear-gradient(45deg, var(--color-8) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-8) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-9) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-9) 75%);
+  background-size: 4px 4px;
+  background-position: 0 0, 0 2px, 2px -2px, -2px 0px;
+}
+
 /* ===== Body ===== */
 body {
   margin: 0;
-  font-family: 'Press Start 2P', sans-serif;
-  background: #000814;
-  color: white;
+  font-family: 'PressStart2P', 'Press Start 2P', monospace;
+  background: var(--color-10);
+  color: var(--color-1);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   overflow-x: hidden;
+  image-rendering: pixelated;
 }
 
-/* ===== Windows-style windows (neobrutalist) ===== */
-.win-window {
-  --nb-bg: #ffffff;
-  --nb-ink: #000000;
-  --nb-accent: #4a7fff;
-  --nb-shadow: #000000;
+/* Use the user-provided image as the default cursor for the page */
+/* Hotspot currently 0 0; change numbers if you want the hotspot elsewhere */
+body {
+  cursor: url('/static/planets/imgs/default.png') 0 0, auto;
+  
 }
 
+/* Ensure text inputs keep the text (I-beam) cursor */
+input, textarea, select {
+  cursor: text;
+}
+
+/* ===== Pixel Window Style (solo colores de colors.css) ===== */
 .win-window {
-  background: var(--nb-bg);
+  background: var(--color-8);
   padding: 0;
-  border: 4px solid var(--nb-ink);
-  box-shadow: 10px 10px 0 var(--nb-shadow);
+  border: 4px solid;
+  border-color: var(--color-3) var(--color-10) var(--color-10) var(--color-3);
+  box-shadow: 
+    inset 2px 2px 0 var(--color-4),
+    inset -2px -2px 0 var(--color-10),
+    8px 8px 0 var(--color-10);
+  image-rendering: pixelated;
 }
 
 .win-window,
 .win-window * {
-  font-family: Tahoma, "MS Sans Serif", Arial, sans-serif;
-  color: var(--nb-ink);
+  font-family: 'PressStart2P', 'Press Start 2P', monospace;
+  color: var(--color-1);
 }
 
 .win-inner {
-  background: var(--nb-bg);
+  background: var(--color-8);
   border: 0;
+  /* Dither pattern overlay */
+  position: relative;
+  width: 100%;
+}
+
+.win-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='2' height='2' fill='%231e2029'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%231e2029'/%3E%3C/svg%3E");
+  background-size: 4px 4px;
+  opacity: 0.3;
+  pointer-events: none;
+  image-rendering: pixelated;
 }
 
 .win-titlebar {
@@ -46,20 +83,27 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 10px;
-  background: var(--nb-accent);
-  border-bottom: 4px solid var(--nb-ink);
+  padding: 4px 6px;
+  /* Gradiente con dither usando colores de colors.css */
+  background: var(--color-6);
+  background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='2' height='2' fill='%23498f45'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%23498f45'/%3E%3C/svg%3E");
+  background-size: 4px 4px;
+  border-bottom: 2px solid var(--color-10);
+  position: relative;
+  z-index: 1;
+  width: 100%;
 }
 
 .win-title {
   font-weight: 700;
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1;
-  color: #fff;
+  color: var(--color-1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   padding-left: 0;
+  text-shadow: 2px 2px 0 var(--color-10);
 }
 
 .win-controls {
@@ -68,25 +112,38 @@ body {
 }
 
 .win-btn {
-  width: 24px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   padding: 0;
-  background: #fff;
-  border: 3px solid var(--nb-ink);
-  font-size: 12px;
+  background: var(--color-7);
+  border: 2px solid;
+  border-color: var(--color-4) var(--color-10) var(--color-10) var(--color-4);
+  font-size: 8px;
+  font-family: 'PressStart2P', 'Press Start 2P', monospace;
   line-height: 16px;
-  cursor: default;
-  box-shadow: 3px 3px 0 var(--nb-shadow);
+  cursor: url('/static/planets/imgs/pointer.png') 0 0, pointer;
+  box-shadow: none;
+  color: var(--color-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.win-btn:hover {
+  background: var(--color-5);
 }
 
 .win-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 var(--nb-shadow);
+  border-color: var(--color-10) var(--color-4) var(--color-4) var(--color-10);
+  transform: none;
+  box-shadow: none;
 }
 
 .win-content {
   padding: 12px;
-  background: var(--nb-bg);
+  background: var(--color-8);
+  position: relative;
+  z-index: 1;
 }
 /* ===== Main ===== */
 main {
@@ -130,7 +187,58 @@ main {
 
 /* clickable planets */
 .solar-system image[id]:not(#background):not(#sun) {
-  cursor: pointer;
+  cursor: url('/static/planets/imgs/pointer.png') 0 0, pointer;
+  outline: none;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  transform-origin: center center;
+  transform-box: fill-box;
+}
+
+.solar-system image[id]:not(#background):not(#sun):hover {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 12px var(--color-3)) drop-shadow(0 0 24px var(--color-5));
+}
+
+.solar-system image[id]:not(#background):not(#sun):focus {
+  outline: none;
+}
+
+/* Planet labels */
+.planet-tooltip {
+  position: fixed;
+  font-family: 'PressStart2P', 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--color-1);
+  background: var(--color-9);
+  padding: 6px 10px;
+  border: 2px solid;
+  border-color: var(--color-4) var(--color-10) var(--color-10) var(--color-4);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  z-index: 9999;
+  white-space: nowrap;
+}
+
+.planet-tooltip.visible {
+  opacity: 1;
+}
+
+/* Sun hover effect - isolated layer */
+.solar-system #sun {
+  cursor: url('/static/planets/imgs/pointer.png') 0 0, pointer;
+  outline: none;
+  will-change: filter;
+}
+
+.solar-system #sun:hover {
+  filter: drop-shadow(0 0 12px var(--color-1)) drop-shadow(0 0 24px var(--color-2));
+}
+
+/* Orbits - prevent any changes */
+.orbit {
+  pointer-events: none;
+  will-change: auto;
 }
 
 /* background opacity */
@@ -141,7 +249,7 @@ main {
 /* ===== ORBITS ===== */
 .orbit {
   fill: none;
-  stroke: #2d5c56;
+  stroke: var(--color-7);
   stroke-width: 2;
   stroke-dasharray: 2 2;
   stroke-linecap: butt;
@@ -167,16 +275,24 @@ main {
   left: 12px;
   top: 12px;
   width: min(520px, calc(100vw - 40px));
+  background: var(--color-8);
+  border: 4px solid;
+  border-color: var(--color-3) var(--color-10) var(--color-10) var(--color-3);
+  box-shadow: 
+    inset 2px 2px 0 var(--color-4),
+    inset -2px -2px 0 var(--color-10),
+    8px 8px 0 var(--color-10);
 }
 
 .planet-modal-body {
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: 10px;
+  line-height: 1.5;
   white-space: pre-wrap;
+  color: var(--color-1);
 }
 
 .planet-modal-close {
-  cursor: pointer;
+  cursor: url('/static/planets/imgs/pointer.png') 0 0, pointer;
 }
 
 /* ===== DATE CONTROL PANEL ===== */
@@ -189,16 +305,23 @@ main {
 
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 15px;
 
-  min-width: 250px;
+  min-width: 320px;
   height: fit-content;
   flex-shrink: 0;
 }
 
+.date-control-panel .win-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 .date-control-panel .win-content {
-  padding: 12px;
+  padding: 20px 24px;
+  width: 100%;
 }
 
 /* ===== Form ===== */
@@ -209,23 +332,34 @@ main {
   width: 100%;
 }
 
+.date-nav-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-/* ===== Inputs ===== */
+/* ===== Inputs Pixel Style ===== */
 .form-group input {
-  background: #fff;
-  color: #000;
-  border: 3px solid #000;
+  background: var(--color-9);
+  color: var(--color-1);
+  border: 2px solid;
+  border-color: var(--color-10) var(--color-6) var(--color-6) var(--color-10);
   border-radius: 0;
-  padding: 8px 10px;
+  padding: 12px 14px;
   font-size: 12px;
-  font-family: inherit;
+  font-family: 'PressStart2P', 'Press Start 2P', monospace;
   cursor: text;
-  box-shadow: 4px 4px 0 #000;
+  box-shadow: 
+    inset 2px 2px 0 var(--color-10),
+    inset -1px -1px 0 var(--color-7);
+  image-rendering: pixelated;
+  height: 44px;
 }
 
 /* Date input wrapper: place the calendar button inside */
@@ -237,49 +371,69 @@ main {
 .date-input {
   width: 100%;
   /* dejar espacio a la derecha para el icono */
-  padding-right: 56px;
+  padding-right: 48px;
   position: relative;
   z-index: 1;
 }
 
-/* Calendar button inside the input */
+/* Calendar button inside the input - Pixel Style */
 .calendar-btn {
   position: absolute;
-  right: 8px;
+  right: 4px;
   top: 50%;
   transform: translateY(-50%);
-  padding: 0;
-  width: 24px;
-  height: 22px;
-  font-size: 12px;
-  line-height: 1;
-  background: #fff;
-  color: #000;
-  border: 3px solid #000;
-  box-shadow: 3px 3px 0 #000;
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+  background: var(--color-7);
+  color: var(--color-1);
+  border: 2px solid;
+  border-color: var(--color-4) var(--color-10) var(--color-10) var(--color-4);
+  box-shadow: none;
   border-radius: 0;
-  cursor: pointer;
+  cursor: url('/static/planets/imgs/pointer.png') 0 0, pointer;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-btn .pixel-icon {
+  width: 20px;
+  height: 20px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  display: block;
+}
+
+.calendar-btn:hover {
+  background: var(--color-5);
 }
 
 .calendar-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 #000;
+  border-color: var(--color-10) var(--color-4) var(--color-4) var(--color-10);
+  transform: translateY(-50%);
+  box-shadow: none;
 }
 
-/* ===== Custom datepicker (month days only) ===== */
+/* ===== Custom datepicker Pixel Style ===== */
 .custom-datepicker {
   position: absolute;
   right: 0;
   top: calc(100% + 8px);
-  background: #fff;
-  color: #000;
-  border: 4px solid #000;
+  background: var(--color-8);
+  color: var(--color-1);
+  border: 4px solid;
+  border-color: var(--color-3) var(--color-10) var(--color-10) var(--color-3);
   padding: 8px;
   z-index: 60;
-  width: 240px;
-  box-shadow: 10px 10px 0 #000;
+  width: 260px;
+  box-shadow: 
+    inset 2px 2px 0 var(--color-4),
+    inset -2px -2px 0 var(--color-10),
+    6px 6px 0 var(--color-10);
   display: none;
+  image-rendering: pixelated;
 }
 
 .custom-datepicker.open {
@@ -295,30 +449,40 @@ main {
 }
 
 .dp-nav-btn {
-  background: #fff;
-  color: #000;
-  border: 3px solid #000;
-  font-size: 14px;
+  background: var(--color-7);
+  color: var(--color-1);
+  border: 2px solid;
+  border-color: var(--color-4) var(--color-10) var(--color-10) var(--color-4);
+  font-size: 10px;
+  font-family: 'PressStart2P', 'Press Start 2P', monospace;
   cursor: pointer;
-  box-shadow: 3px 3px 0 #000;
+  box-shadow: none;
+  padding: 2px 6px;
+}
+
+.dp-nav-btn:hover {
+  background: var(--color-5);
 }
 
 .dp-nav-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 #000;
+  border-color: var(--color-10) var(--color-4) var(--color-4) var(--color-10);
+  transform: none;
+  box-shadow: none;
 }
 
 .dp-title {
-  font-size: 12px;
-  color: #000;
+  font-size: 8px;
+  font-family: 'PressStart2P', 'Press Start 2P', monospace;
+  color: var(--color-1);
 }
 
 .dp-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
-  font-size: 11px;
-  color: #000;
+  font-size: 8px;
+  font-family: 'PressStart2P', 'Press Start 2P', monospace;
+  color: var(--color-2);
   margin-bottom: 4px;
 }
 
@@ -334,25 +498,27 @@ main {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
-  border: 3px solid #000;
-  color: #000;
+  background: var(--color-7);
+  border: 2px solid;
+  border-color: var(--color-4) var(--color-10) var(--color-10) var(--color-4);
+  color: var(--color-1);
   cursor: pointer;
-  font-size: 12px;
-}
-
-.dp-day:active {
-  transform: translate(2px, 2px);
-}
-
-.dp-day.disabled {
-  color: #7a7a7a;
-  cursor: default;
+  font-size: 8px;
+  font-family: 'PressStart2P', 'Press Start 2P', monospace;
 }
 
 .dp-day:hover:not(.disabled) {
-  background: #4a7fff;
-  color: #000;
+  background: var(--color-5);
+  color: var(--color-1);
+}
+
+.dp-day:active:not(.disabled) {
+  border-color: var(--color-10) var(--color-4) var(--color-4) var(--color-10);
+}
+
+.dp-day.disabled {
+  color: var(--color-7);
+  cursor: default;
 }
 
 .calendar-btn:focus {
@@ -362,25 +528,43 @@ main {
 
 .form-group input:focus {
   outline: none;
-  border-color: #000;
+  border-color: var(--color-10) var(--color-5) var(--color-5) var(--color-10);
 }
 
-/* ===== Botones ===== */
+/* ===== Botones Pixel Style ===== */
 .btn {
-  padding: 6px 10px;
+  padding: 10px 16px;
   border-radius: 0;
-  font-family: inherit;
-  font-size: 11px;
+  font-family: 'PressStart2P', 'Press Start 2P', monospace;
+  font-size: 10px;
   cursor: pointer;
   text-transform: none;
-  background: #fff;
-  border: 3px solid #000;
-  box-shadow: 4px 4px 0 #000;
+  background: var(--color-7);
+  border: 2px solid;
+  border-color: var(--color-4) var(--color-10) var(--color-10) var(--color-4);
+  box-shadow: none;
+  color: var(--color-1);
+  image-rendering: pixelated;
+}
+
+.btn-nav {
+  padding: 10px 14px;
+  font-size: 12px;
+}
+
+.btn-today {
+  padding: 10px 20px;
+  font-size: 10px;
+}
+
+.btn:hover {
+  background: var(--color-5);
 }
 
 .btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 #000;
+  border-color: var(--color-10) var(--color-4) var(--color-4) var(--color-10);
+  transform: none;
+  box-shadow: none;
 }
 
 /* ===== Responsive ===== */
@@ -401,4 +585,20 @@ main {
     width: 90vw;
   }
 }
+
+/* ===== Custom pointer cursor (pixel art) ===== */
+/* Uses the user-provided image at static/planets/imgs/pointer.png */
+/* Hotspot set to 0 0 — adjust numbers (x y) if you want the tip elsewhere */
+.solar-system image[id]:not(#background),
+.btn,
+button,
+.win-btn,
+.open-btn,
+.custom-datepicker .dp-day:not(.disabled),
+.custom-datepicker .dp-nav-btn {
+  cursor: url('/static/planets/imgs/pointer.png') 0 0, pointer;
+}
+
+/* Fallback for inputs/text selection (I-beam) keep default text cursor */
+input, textarea { cursor: text; }
 

@@ -24,18 +24,30 @@
 
 
     <h1>Planets Distance from Vigo</h1>
-    <div>
+    
+    <!-- Ventana Windows 95 pixelada -->
+    <div class="win95-window">
+        <div class="win95-titlebar">
+            <span class="win95-title">🪐 Solar System</span>
+            <div class="win95-buttons">
+                <button class="win95-btn win95-minimize">_</button>
+                <button class="win95-btn win95-maximize">□</button>
+                <button class="win95-btn win95-close">X</button>
+            </div>
+        </div>
+        <div class="win95-content">
 
-        {% for planet in planets %}         <!-- esto crea un bucle for en django-->
-                                            <!-- el bucle recorre la lista de planetas y genera un boton por cada planeta -->
+            {% for planet in planets %}         <!-- esto crea un bucle for en django-->
+                                                <!-- el bucle recorre la lista de planetas y genera un boton por cada planeta -->
 
-            <form action="{% url 'distance' planet %}" method="get" >
+                <form action="{% url 'distance' planet %}" method="get" >
 
-                <button type="submit">{{ planet|capfirst }}</button>                
-            </form>
+                    <button type="submit" class="win95-app-btn">{{ planet|capfirst }}</button>                
+                </form>
 
-        {% endfor %}
+            {% endfor %}
 
+        </div>
     </div>
 
 

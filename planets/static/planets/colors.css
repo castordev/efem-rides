@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'PressStart2P';
+  src: url('font/PressStart2P-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root{
   --color-1: #e8f1a6;
   --color-2: #cad670;
@@ -20,6 +28,12 @@
   --muted: #9aa4b2;
   --orbit: var(--color-7);
   --asteroid: var(--color-1);
+  --app-font: 'PressStart2P', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Apply the chosen font globally (keeps SVG orbit image sizes unchanged) */
+html, body, input, button, select, textarea, svg, .win-inner, .win-title, .win-content, .date-control-panel {
+  font-family: var(--app-font);
 }
 
 /* Minimal examples of usage - adapt or remove as you prefer */

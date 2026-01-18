@@ -40,6 +40,7 @@
           id="sun"
           href="{% static 'planets/gifs/sun.gif' %}"
           xlink:href="{% static 'planets/gifs/sun.gif' %}"
+          data-name="Sun"
           x="710" y="710"
           width="180" height="180"
           preserveAspectRatio="xMidYMid meet"
@@ -54,15 +55,18 @@
         <g id="asteroid-belt"></g>
 
         <!-- Planets (GIF/PNG) -->
-        <image id="mercury" href="{% static 'planets/gifs/mercury.gif' %}" xlink:href="{% static 'planets/gifs/mercury.gif' %}" width="30" height="30" preserveAspectRatio="xMidYMid meet"></image>
-        <image id="venus" href="{% static 'planets/gifs/venus.gif' %}" xlink:href="{% static 'planets/gifs/venus.gif' %}" width="35" height="35" preserveAspectRatio="xMidYMid meet"></image>
-        <image id="earth" href="{% static 'planets/gifs/earth.gif' %}" xlink:href="{% static 'planets/gifs/earth.gif' %}" width="40" height="40" preserveAspectRatio="xMidYMid meet"></image>
-        <image id="mars" href="{% static 'planets/gifs/mars.gif' %}" xlink:href="{% static 'planets/gifs/mars.gif' %}" width="35" height="35" preserveAspectRatio="xMidYMid meet"></image>
-        <image id="jupiter" href="{% static 'planets/gifs/jupiter.gif' %}" xlink:href="{% static 'planets/gifs/jupiter.gif' %}" width="80" height="80" preserveAspectRatio="xMidYMid meet"></image>
-        <image id="saturn" href="{% static 'planets/gifs/saturn.gif' %}" xlink:href="{% static 'planets/gifs/saturn.gif' %}" width="120" height="120" preserveAspectRatio="xMidYMid meet"></image>
-        <image id="uranus" href="{% static 'planets/gifs/uranus.gif' %}" xlink:href="{% static 'planets/gifs/uranus.gif' %}" width="60" height="60" preserveAspectRatio="xMidYMid meet"></image>
-        <image id="neptune" href="{% static 'planets/gifs/neptune.gif' %}" xlink:href="{% static 'planets/gifs/neptune.gif' %}" width="60" height="60" preserveAspectRatio="xMidYMid meet"></image>
+        <image id="mercury" href="{% static 'planets/gifs/mercury.gif' %}" xlink:href="{% static 'planets/gifs/mercury.gif' %}" width="30" height="30" preserveAspectRatio="xMidYMid meet" data-name="Mercury"></image>
+        <image id="venus" href="{% static 'planets/gifs/venus.gif' %}" xlink:href="{% static 'planets/gifs/venus.gif' %}" width="35" height="35" preserveAspectRatio="xMidYMid meet" data-name="Venus"></image>
+        <image id="earth" href="{% static 'planets/gifs/earth.gif' %}" xlink:href="{% static 'planets/gifs/earth.gif' %}" width="40" height="40" preserveAspectRatio="xMidYMid meet" data-name="Earth"></image>
+        <image id="mars" href="{% static 'planets/gifs/mars.gif' %}" xlink:href="{% static 'planets/gifs/mars.gif' %}" width="35" height="35" preserveAspectRatio="xMidYMid meet" data-name="Mars"></image>
+        <image id="jupiter" href="{% static 'planets/gifs/jupiter.gif' %}" xlink:href="{% static 'planets/gifs/jupiter.gif' %}" width="80" height="80" preserveAspectRatio="xMidYMid meet" data-name="Jupiter"></image>
+        <image id="saturn" href="{% static 'planets/gifs/saturn.gif' %}" xlink:href="{% static 'planets/gifs/saturn.gif' %}" width="120" height="120" preserveAspectRatio="xMidYMid meet" data-name="Saturn"></image>
+        <image id="uranus" href="{% static 'planets/gifs/uranus.gif' %}" xlink:href="{% static 'planets/gifs/uranus.gif' %}" width="60" height="60" preserveAspectRatio="xMidYMid meet" data-name="Uranus"></image>
+        <image id="neptune" href="{% static 'planets/gifs/neptune.gif' %}" xlink:href="{% static 'planets/gifs/neptune.gif' %}" width="60" height="60" preserveAspectRatio="xMidYMid meet" data-name="Neptune"></image>
         </svg>
+
+        <!-- Tooltip for planet names -->
+        <div id="planet-tooltip" class="planet-tooltip"></div>
       </div>
     </div>
   </div>
@@ -84,7 +88,9 @@
           <div class="form-group">
             <div class="date-input-wrap">
               <input type="text" id="date" name="date" value="{{ selected_date }}" class="date-input" placeholder="YYYY-MM-DD">
-              <button type="button" id="calendar-btn" class="btn calendar-btn" aria-label="Open calendar">📅</button>
+              <button type="button" id="calendar-btn" class="btn calendar-btn" aria-label="Open calendar">
+                <img src="{% static 'planets/imgs/calendar.png' %}" alt="Calendar" class="pixel-icon">
+              </button>
               <!-- Container for the custom datepicker -->
               <div id="custom-datepicker" class="custom-datepicker" aria-hidden="true"></div>
             </div>

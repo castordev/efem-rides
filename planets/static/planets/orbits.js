@@ -303,6 +303,35 @@ window.addEventListener('DOMContentLoaded', () => {
             el.setAttribute('cy', cy);
         }
     }
+    
+    // Planet tooltip that follows cursor
+    const tooltip = document.getElementById('planet-tooltip');
+    if (tooltip) {
+        // IMPORTANT: the solar system is inside a transformed container.
+        // A transformed ancestor can make `position: fixed` behave like `absolute`.
+        // Move the tooltip to <body> so clientX/clientY map correctly to the viewport.
+        if (tooltip.parentElement !== document.body) {
+            document.body.appendChild(tooltip);
+        }
+
+        const planetsWithNames = document.querySelectorAll('.solar-system image[data-name]');
+        planetsWithNames.forEach((planet) => {
+            planet.addEventListener('mouseenter', (e) => {
+                tooltip.textContent = planet.getAttribute('data-name');
+                tooltip.classList.add('visible');
+            });
+            
+            planet.addEventListener('mousemove', (e) => {
+                // Cerca del puntero, pero sin taparlo
+                tooltip.style.left = (e.clientX + 10) + 'px';
+                tooltip.style.top = (e.clientY + 10) + 'px';
+            });
+            
+            planet.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('visible');
+            });
+        });
+    }
 
     // Register clicks on planets (only the expected ones)
     clickableBodies.forEach((planetId) => {
