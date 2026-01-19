@@ -16,12 +16,16 @@
 </head>
 <body>
 
+    <button id="toggleCrt" class="crt-toggle-btn" type="button" aria-label="Toggle CRT filter" aria-pressed="false">CRT</button>
+
 
     <h1>Distance to {{ planet_name|capfirst }}</h1> 
 
     <p>{{ distance|intcomma }} km</p>                           <!-- intcoma convierte un numero grande en un formato mas legible (1000 pasa a ser 1,000)-->
 
     <a href="{% url 'home' %}">Back</a>                         <!-- enlace clickable para volver->
+
+    <script src="{% static 'planets/sidebar.js' %}"></script>
 
 
 </body>

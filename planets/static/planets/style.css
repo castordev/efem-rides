@@ -7,6 +7,164 @@ body {
     min-height: 100vh;
 }
 
+/* ===== CRT / Old TV filter (toggle via html.crt-on) ===== */
+html.crt-on body {
+    filter: contrast(1.18) saturate(1.28) brightness(1.10) blur(0.35px);
+    text-shadow: -1.3px 0 rgba(255, 0, 0, 0.32), 1.3px 0 rgba(0, 255, 255, 0.28);
+}
+
+html.crt-on::before,
+html.crt-on::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999990;
+}
+
+html.crt-on::before {
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.32) 0px,
+            rgba(0, 0, 0, 0.32) 1px,
+            rgba(0, 0, 0, 0.00) 2px,
+            rgba(0, 0, 0, 0.00) 4px
+        );
+    mix-blend-mode: multiply;
+    opacity: 0.80;
+}
+
+@keyframes crt-flicker {
+    0% { opacity: 0.12; }
+    10% { opacity: 0.18; }
+    20% { opacity: 0.10; }
+    30% { opacity: 0.20; }
+    40% { opacity: 0.14; }
+    50% { opacity: 0.22; }
+    60% { opacity: 0.12; }
+    70% { opacity: 0.19; }
+    80% { opacity: 0.11; }
+    90% { opacity: 0.17; }
+    100% { opacity: 0.13; }
+}
+
+html.crt-on::after {
+    z-index: 999991;
+    background:
+        radial-gradient(ellipse at center, rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.35) 70%, rgba(0, 0, 0, 0.65) 100%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 1px, rgba(0, 0, 0, 0.02) 2px, rgba(0, 0, 0, 0.02) 3px);
+    mix-blend-mode: overlay;
+    opacity: 0.30;
+    animation: crt-flicker 110ms infinite;
+}
+
+@keyframes crt-jitter {
+    0% { transform: translate3d(0, 0, 0); }
+    20% { transform: translate3d(-0.8px, 0, 0); }
+    40% { transform: translate3d(0.6px, -0.4px, 0); }
+    60% { transform: translate3d(-0.4px, 0.6px, 0); }
+    80% { transform: translate3d(0.9px, 0, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+}
+
+html.crt-on::before {
+    animation: crt-jitter 220ms infinite;
+}
+
+/* RGB shadow mask (triads) */
+html.crt-on body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999989;
+    background: repeating-linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 0.10) 0px,
+        rgba(255, 0, 0, 0.10) 1px,
+        rgba(0, 255, 120, 0.06) 1px,
+        rgba(0, 255, 120, 0.06) 2px,
+        rgba(0, 140, 255, 0.10) 2px,
+        rgba(0, 140, 255, 0.10) 3px
+    );
+    background-size: 3px 100%;
+    mix-blend-mode: overlay;
+    opacity: 0.55;
+}
+
+@keyframes crt-roll {
+    /* Animate within the viewport to avoid scrollbars */
+    0% { background-position: 0 -45vh; }
+    100% { background-position: 0 145vh; }
+}
+
+html.crt-on body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999992;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.00) 0%,
+        rgba(255, 255, 255, 0.06) 35%,
+        rgba(255, 255, 255, 0.12) 50%,
+        rgba(255, 255, 255, 0.06) 65%,
+        rgba(255, 255, 255, 0.00) 100%
+    );
+    mix-blend-mode: overlay;
+    opacity: 0.45;
+    background-repeat: no-repeat;
+    background-size: 100% 45vh;
+    background-position: 0 -45vh;
+    animation: crt-roll 4.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.crt-on::after {
+        animation: none;
+    }
+    html.crt-on::before {
+        animation: none;
+    }
+    html.crt-on body::after {
+        animation: none;
+    }
+}
+
+/* CRT toggle button (fixed) */
+.crt-toggle-btn {
+    position: fixed;
+    top: 16px;
+    right: 10px;
+    height: 30px;
+    min-width: 54px;
+    padding: 0 10px;
+    z-index: 999992;
+    background: #c0c0c0;
+    border: 3px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    color: #000;
+    cursor: pointer;
+    font-family: 'PressStart2P', monospace;
+    font-size: 8px;
+    box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #0a0a0a;
+}
+
+.crt-toggle-btn:hover {
+    background: #dfdfdf;
+}
+
+.crt-toggle-btn:active {
+    border-color: #808080 #ffffff #ffffff #808080;
+    box-shadow: inset 2px 2px 0 #0a0a0a;
+}
+
+.crt-toggle-btn.is-on {
+    background: #b6d7a8;
+}
+
 h1 {
     margin-bottom: 30px;
     font-size: 14px;
