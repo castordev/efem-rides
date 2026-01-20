@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('', views.home_view, name='home'),  # página principal
+    path('', views.orbits, name='home'),  # página principal ahora muestra orbits
     path('distance/<str:planet_name>/', views.distance_view, name='distance'),  # detalles por planeta
     path('orbits/', views.orbits, name='orbits'),  # tu página 1
     path('api/planet-info/', views.planet_info_api, name='planet_info_api'),
